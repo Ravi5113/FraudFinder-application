@@ -338,10 +338,11 @@ app.post('/api/query', requireDatabase, async (req, res) => {
   // unless they are explicitly authorized. Let's allow everything for demo flexibility, but add a warning.
   const session = driver.session();
   try {
-    const result = await session.run(cypher);
+    const resultStream = session.run(cypher);
+    const columns = await resultStream.keys();
+    const result = await resultStream;
     
     // Parse records into raw arrays of objects
-    const columns = result.keys;
     const rows = result.records.map(record => {
       const row = {};
       columns.forEach(col => {
