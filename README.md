@@ -145,6 +145,11 @@ wexa-ai/
 
 ## 5. Setup and Running Locally
 
+### Step 0: Create CognoDB Cloud Instance
+1. Go to the [CognoDB Cloud Console](https://console.cognodb.com/signup) and sign up (the free tier requires no credit card).
+2. Click **Create Instance**, choose the **Free (c0)** tier, pick a region, and launch it (provisions in under a minute).
+3. Save your connection details. Copy the Bolt connection URI (looks like `bolt+s://<instance-id>.databases.cognodb.cloud` or `.com`) and the generated password for the `cognodb` user immediately.
+
 ### Step 1: Install Root Dependencies
 Navigate to your root workspace directory and install Express backend packages:
 ```powershell
