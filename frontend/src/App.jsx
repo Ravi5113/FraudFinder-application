@@ -14,6 +14,26 @@ const CYPHER_PRESETS = [
   { label: 'Show IP Logins', query: 'MATCH (i:IPAddress)<-[:USED_IP]-(a:Account) RETURN i, a' }
 ];
 
+// Helper for robust API calls and detailed status messages
+const safeFetchJson = async (url, options = {}) => {
+  const res = await fetch(url, options);
+  if (!res.ok) {
+    let errorText = '';
+    try {
+      errorText = await res.text();
+    } catch (_) {}
+    if (res.status === 404) {
+      throw new Error(`Endpoint not found (404). If this is a new deployment, please wait 1-2 minutes for Render to completely swap routing.`);
+    }
+    throw new Error(`Server returned status ${res.status}: ${errorText || res.statusText}`);
+  }
+  try {
+    return await res.json();
+  } catch (e) {
+    throw new Error('Response is not valid JSON. The server may have returned an HTML error page.');
+  }
+};
+
 export default function App() {
   const [activeTab, setActiveTab] = useState('dashboard');
   const [dbStatus, setDbStatus] = useState('connecting');
@@ -42,8 +62,7 @@ export default function App() {
   const checkDatabaseStatus = async () => {
     setDbStatus('connecting');
     try {
-      const res = await fetch('/api/db-status');
-      const data = await res.json();
+      const data = await safeFetchJson('/api/db-status');
       if (data.status === 'connected') {
         setDbStatus('connected');
         loadFullNetwork();
@@ -53,7 +72,7 @@ export default function App() {
       }
     } catch (error) {
       setDbStatus('disconnected');
-      alert('Could not connect to backend server. Make sure node server.js is running.');
+      alert(`Could not connect to backend server. ${error.message}`);
     }
   };
 
@@ -62,8 +81,7 @@ export default function App() {
     setLoading(true);
     setLoadingText('Fetching Network Graph...');
     try {
-      const res = await fetch('/api/network');
-      const data = await res.json();
+      const data = await safeFetchJson('/api/network');
       if (data.success !== false) {
         setNodes(data.nodes);
         setEdges(data.edges);
@@ -88,8 +106,7 @@ export default function App() {
     clearHighlights();
     
     try {
-      const res = await fetch('/api/seed', { method: 'POST' });
-      const data = await res.json();
+      const data = await safeFetchJson('/api/seed', { method: 'POST' });
       if (data.success) {
         alert('Database successfully seeded!');
         loadFullNetwork();
@@ -110,8 +127,7 @@ export default function App() {
     setSelectedElement(null);
     
     try {
-      const res = await fetch('/api/fraud/circular');
-      const data = await res.json();
+      const data = await safeFetchJson('/api/fraud/circular');
       
       if (!data.success) {
         alert(`Circular loop detection failed: ${data.error}`);
@@ -162,8 +178,7 @@ export default function App() {
     setSelectedElement(null);
     
     try {
-      const res = await fetch('/api/fraud/shared-entities');
-      const data = await res.json();
+      const data = await safeFetchJson('/api/fraud/shared-entities');
       
       if (!data.success) {
         alert(`Shared entities trace failed: ${data.error}`);
@@ -238,8 +253,7 @@ export default function App() {
     setSelectedElement(null);
     
     try {
-      const res = await fetch(`/api/fraud/trace-path?accountId=${accountId}`);
-      const data = await res.json();
+      const data = await safeFetchJson(`/api/fraud/trace-path?accountId=${accountId}`);
       
       if (!data.success) {
         alert(`Tracer failed: ${data.error}`);
@@ -327,12 +341,11 @@ export default function App() {
     setConsoleResults(null);
     
     try {
-      const res = await fetch('/api/query', {
+      const data = await safeFetchJson('/api/query', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ cypher: cypherText })
       });
-      const data = await res.json();
       
       if (!data.success) {
         alert(`Cypher Error: ${data.error}`);
