@@ -1,8 +1,12 @@
 # FraudFinder: CognoDB Graph Database Application
 
+### 🔗 Deployed Live Demo: [https://fraudfinder-0h3r.onrender.com/](https://fraudfinder-0h3r.onrender.com/)
+
 FraudFinder is a real-time compliance and transaction monitoring dashboard built for identifying money laundering loops and shared identity fraud rings. 
 
 This application is built as a candidate assessment for **Wexa AI**, using **CognoDB Cloud** (speaking openCypher over Bolt) as the database layer and an interactive Node.js/Express and Vis.js web stack.
+
+![Dashboard Preview](screenshots/dashboard.png)
 
 ---
 
@@ -68,6 +72,8 @@ RETURN a1, a2, a3, r1, r2, r3
   * `a2.accountId <> a3.accountId AND a1.accountId <> a3.accountId` ensures all three accounts in the loop are distinct.
 * **Why it's awkward in SQL:** Requires joining a `transactions` table to itself three times. If you want to detect loops of arbitrary length (e.g., up to 6 hops), the query becomes unmaintainable and crashes under heavy transaction loads.
 
+![Money Laundering Loops](screenshots/money_laundering_loops.png)
+
 ---
 
 ### Query 2: Shared Entity Fraud Rings (Guilt by Association)
@@ -82,6 +88,8 @@ RETURN riskAcc, sharedEnt, suspectAcc, r1, r2
   * `MATCH` uses a multi-relationship syntax `[:USED_DEVICE|USED_IP]` to find paths that connect a flagged high-risk account (`riskScore >= 0.8`) to any other account through a shared `Device` or `IPAddress` node.
   * `riskAcc <> suspectAcc` ensures we don't match the risk account to itself.
 * **Why it's awkward in SQL:** Requires joining `accounts`, `device_logins`, and `ip_logins` tables. Finding shared connections requires multiple join conditions and group-by clauses, which degrades query performance.
+
+![Shared Entity Fraud Rings](screenshots/shared_entity_fraud_rings.png)
 
 ---
 
@@ -101,6 +109,8 @@ RETURN path
   * `$accountId` is a parameterized variable passed securely by the Node.js driver.
 * **Why it's awkward in SQL:** Standard SQL cannot perform shortest-path queries natively. It requires writing a complex recursive CTE with cycle detection, which is hard to write, test, and optimize.
 
+![Trace Connection Path](screenshots/trace_connection_path.png)
+
 ---
 
 ## 4. Technology Stack & Project Structure
@@ -110,6 +120,8 @@ RETURN path
 - **Frontend:** React, modular JSX components (Header, DashboardTab, FraudTab, ConsoleTab, GraphCanvas, Inspector)
 - **Bundler:** Vite
 - **Graph Visualization:** `Vis.js Network` (imported locally via npm)
+
+![Cypher Console Results](screenshots/cypher_console_results.png)
 
 ```
 wexa-ai/
