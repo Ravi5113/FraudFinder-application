@@ -140,12 +140,12 @@ async function seedDatabase(driver) {
     });
 
     // 5b. Shared Device/IP Fraud Ring
-    // Dave (risk 0.90), Eve (risk 0.85), and Frank (risk 0.30) log in on the same machine (DEV002) and IP (IP003)
+    // Dave (risk 0.90), Eve (risk 0.85), and Frank (risk 0.30) log in on the same machine (DEV002) and IP (172.16.254.1)
     console.log('Establishing shared device & IP address relationships...');
     const logins = [
-      { acc: 'ACC004', dev: 'DEV002', ip: 'IP003', time: '2026-08-11T12:00:00Z' },
-      { acc: 'ACC005', dev: 'DEV002', ip: 'IP003', time: '2026-08-11T12:10:00Z' },
-      { acc: 'ACC006', dev: 'DEV002', ip: null,    time: '2026-08-11T12:30:00Z' } // Frank shares device, but not IP
+      { acc: 'ACC004', dev: 'DEV002', ip: '172.16.254.1', time: '2026-08-11T12:00:00Z' },
+      { acc: 'ACC005', dev: 'DEV002', ip: '172.16.254.1', time: '2026-08-11T12:10:00Z' },
+      { acc: 'ACC006', dev: 'DEV002', ip: null,           time: '2026-08-11T12:30:00Z' } // Frank shares device, but not IP
     ];
 
     await session.executeWrite(tx => {

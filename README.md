@@ -1,7 +1,7 @@
 # FraudFinder: CognoDB Graph Database Application
 
 ### 🔗 Deployed Live Demo: [https://fraudfinder-0h3r.onrender.com/](https://fraudfinder-0h3r.onrender.com/)
-### 🎥 Video Demo Walkthrough: [Click Here to Watch Video (Loom/Drive Link)]()
+### 🎥 Video Demo Walkthrough: [https://drive.google.com/file/d/1IiMUJGQJdvzfaZ1dePKwTYVelr8ykx0x/view?usp=sharing]()
 
 FraudFinder is a real-time compliance and transaction monitoring dashboard built for identifying money laundering loops and shared identity fraud rings. 
 
